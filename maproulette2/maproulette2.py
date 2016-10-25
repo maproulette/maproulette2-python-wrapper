@@ -1,9 +1,16 @@
 #!/usr/bin/env python
 
 import json
-
+import os
 
 class Project(object):
+
+    READONLY = ["id"]
+
+    @property
+    def path(self):
+        return os.path.join("project", self._id)
+
     @property
     def id(self):
         return self._id
@@ -31,7 +38,14 @@ class Project(object):
 
     #TODO support groups
 
+
 class Challenge(object):
+
+    READONLY = ["id", "featured"]
+
+    @property
+    def path(self):
+        return os.path.join("challenge", self._id)
 
     @property
     def id(self):
@@ -159,6 +173,7 @@ class Challenge(object):
         self._blurb = None
         self._enabled = False
         self._challenge_type = None
+        self._featured = None
         self._default_priority = None
         self._default_zoom = None
         self._min_zoom = None
@@ -184,6 +199,13 @@ class Challenge(object):
 
 
 class Task(object):
+
+    READONLY = ["id"]
+
+    @property
+    def paths(self):
+        return os.path.join("task", self._id)
+
     @property
     def id(self):
         """The task identifier, as assigned by MapRoulette"""
@@ -238,6 +260,27 @@ class Task(object):
             "instruction": self._instruction,
             "location": self._location
         }])
+
+
+class TaskCollection(object):
+
+
+    @property
+    def tasks(self):
+        return self._tasks
+
+    @tasks.setter
+    def tasks(self, value):
+        self._tasks = value
+
+    def add_task(self, task):
+        self._tasks.append(task)
+
+    def __init__(self):
+        self._tasks = []
+
+    def __str__(self):
+        return json.dumps(tasks)
 
 
 class Server(object):
