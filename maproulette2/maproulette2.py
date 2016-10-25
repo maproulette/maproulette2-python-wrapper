@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import json
 import os
+import json
+import requests
 
 class Project(object):
 
@@ -9,7 +10,7 @@ class Project(object):
 
     @property
     def path(self):
-        return os.path.join("project", self._id)
+        return os.path.join("project", str(self._id))
 
     @property
     def id(self):
@@ -31,10 +32,30 @@ class Project(object):
     def description(self, value):
         self._description = value
 
-    def __init__(self):
-        self._id = None
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
+
+    def __init__(self, id=None):
+        self._id = id
         self._name = None
         self._description = None
+        self._enabled = None
+
+    def __str__(self):
+        return json.dumps({
+            "id": self._id,
+            "name": self._name,
+            "description": self._description,
+            "enabled": self._enabled
+        })
+
+    def get(self, server):
+        return server.get(self.path)
 
     #TODO support groups
 
@@ -94,7 +115,7 @@ class Challenge(object):
     @difficulty.setter
     def difficulty(self, value):
         self._difficulty = value
-    
+
     @property
     def blurb(self):
         """The challenge Blurb (short description)"""
@@ -103,7 +124,7 @@ class Challenge(object):
     @blurb.setter
     def blurb(self, value):
         self._blurb = value
-    
+
     @property
     def enabled(self):
         """Whether the Challenge is Enabled or not"""
@@ -130,7 +151,7 @@ class Challenge(object):
     @featured.setter
     def featured(self, value):
         self._featured = value
-    
+
     @property
     def default_priority(self):
         return self._default_priority
@@ -142,7 +163,7 @@ class Challenge(object):
     @property
     def default_zoom(self):
         return self._default_zoom
-    
+
     @default_zoom.setter
     def default_zoom(self, value):
         self._default_zoom = value
@@ -163,8 +184,8 @@ class Challenge(object):
     def max_zoom(self, value):
         self._max_zoom = value
 
-    def __init__(self):
-        self._id = None
+    def __init__(self, id=None):
+        self._id = id
         self._name = None
         self._description = None
         self._parent = None
@@ -204,7 +225,7 @@ class Task(object):
 
     @property
     def paths(self):
-        return os.path.join("task", self._id)
+        return os.path.join("task", str(self._id))
 
     @property
     def id(self):
@@ -245,8 +266,8 @@ class Task(object):
     def location(self, value):
         self._location = value
 
-    def __init__(self):
-        self._id = None
+    def __init__(self, id=None):
+        self._id = id
         self._name = None
         self._parent = None
         self._instruction = None
@@ -284,16 +305,19 @@ class TaskCollection(object):
 
 
 class Server(object):
-    base_url = "http://maproulette.org/api/v2"
-    api_key = None
+    """MapRoulette server instance"""
 
     def __init__(self, api_key):
+        self.base_url = "http://maproulette.org/api/v2"
         self.api_key = api_key
 
-    def post(self, payload):
-        pass
+    def get(self, path):
+        response = requests.get(os.path.join(self.base_url, path))
+        if response.status_code == 200:
+            return response.text
+        raise MaprouletteException()
 
-    def get(self):
+    def post(self, payload):
         pass
 
     def put(self, payload):
@@ -301,3 +325,8 @@ class Server(object):
 
     def delete(self):
         pass
+
+
+class MaprouletteException(Exception):
+    """MapRoulette API Exception"""
+    pass
