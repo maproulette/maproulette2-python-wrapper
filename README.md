@@ -1,5 +1,13 @@
 # MapRoulette API Wrapper
 
+## Install
+
+_PyPi to follow..._
+
+```
+./setup.py
+```
+
 ## Project
 
 ### Create
@@ -94,34 +102,55 @@ s = Server()
 c = Challenge(id)
 c.get(s)
 t = Task()
-t.location = 
+t.instruction = "Solve this please"
+t.parent = c
+t.location = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -98.4375,
+          39.095962936305476
+        ]
+      }
+    }
+  ]
+}
+t.post(s)
 ```
 
 ### Retrieve
 
 ```
 s = Server()
-c = Challenge()
-c.retrieve(s, id)
+t = Task(id)
+t.retrieve(s)
 ```
 
 ### Modify
 
 ```
 s = Server()
-c = Challenge()
-c.get(s, id)
-c.name = "Modified Name"
-c.put(s)
+t = Task(id)
+t.get(s)
+t.instruction = "Modified Instruction"
+t.put(s)
 ```
 
 ### Delete
 
-_This will also delete all child tasks!_
-
 ```
 s = Server()
-c = Challenge()
-c.delete(s, id)
+t = Task(id)
+t.delete(s)
 ```
 
+## Run Tests
+
+```
+export MR_API_KEY=your_api_key && ./test_maproulette2.py
+```
