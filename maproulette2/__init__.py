@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 
-from .maproulette2 import Challenge, Task, Server
+from .maproulette2 import Project, Challenge, Task, Server
