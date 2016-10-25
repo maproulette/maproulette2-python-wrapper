@@ -4,13 +4,17 @@
 
 _PyPi to follow..._
 
+On your local machine:
+
 ```
-./setup.py
+./setup.py install
 ```
 
-## Project
+## API
 
-### Create
+### Project
+
+#### Create
 
 _Only Superusers can create new Projects on the server._
 
@@ -21,7 +25,7 @@ p.name = "New Project"
 p.post(s)
 ```
 
-### Retrieve
+#### Retrieve
 
 ```
 s = Server()
@@ -29,7 +33,7 @@ p = Project(id)
 p.retrieve(s)
 ```
 
-### Modify
+#### Modify
 
 ```
 s = Server()
@@ -39,7 +43,7 @@ p.name = "Modified Name"
 p.put(s)
 ```
 
-### Delete
+#### Delete
 
 _Only Superusers can delete Projects on the server._
 
@@ -49,9 +53,9 @@ p = Project(id)
 p.delete(s)
 ```
 
-## Challenge
+### Challenge
 
-### Create
+#### Create
 
 Each Challenge needs a valid parent Project
 
@@ -65,7 +69,7 @@ c.parent = p
 c.post(s)
 ```
 
-### Retrieve
+#### Retrieve
 
 ```
 s = Server()
@@ -73,7 +77,7 @@ c = Challenge(id)
 c.retrieve(s)
 ```
 
-### Modify
+#### Modify
 
 ```
 s = Server()
@@ -83,7 +87,7 @@ c.name = "Modified Name"
 c.put(s)
 ```
 
-### Delete
+#### Delete
 
 _This will also delete all child tasks!_
 
@@ -93,9 +97,9 @@ c = Challenge(id)
 c.delete(s)
 ```
 
-## Task
+### Task
 
-### Create
+#### Create
 
 ```
 s = Server()
@@ -123,7 +127,7 @@ t.location = {
 t.post(s)
 ```
 
-### Retrieve
+#### Retrieve
 
 ```
 s = Server()
@@ -131,7 +135,7 @@ t = Task(id)
 t.retrieve(s)
 ```
 
-### Modify
+#### Modify
 
 ```
 s = Server()
@@ -141,7 +145,7 @@ t.instruction = "Modified Instruction"
 t.put(s)
 ```
 
-### Delete
+#### Delete
 
 ```
 s = Server()
