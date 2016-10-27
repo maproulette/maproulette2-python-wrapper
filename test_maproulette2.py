@@ -14,7 +14,8 @@ class TestApi(unittest.TestCase):
 
     def setUp(self):
         api_key = os.environ["MR_API_KEY"]
-        self.server = Server(api_key)
+        project_id = os.environ["MR_PROJECT_ID"]
+        self.server = Server(api_key, project_id, base_url="http://localhost:9000/api/v2")
 
     def tearDown(self):
         self.server = None
@@ -40,13 +41,17 @@ class TestApi(unittest.TestCase):
             p.id = 12345
 
     def test_retrieveProject(self):
-        """Test retrieving a project from the server"""
+        """Test retrieving my project from the server"""
         p = Project(1)
         p.get(self.server)
         self.assertIn('"id": 1', p.__str__())
 
+    def test_getMyChallenges(self):
+        """retrieve my own challenges"""
+        challenges = self.server.my_challenges()
+
 if __name__ == '__main__':
-    if os.environ.get("MR_API_KEY"):
+    if os.environ.get("MR_API_KEY") and os.environ.get("MR_PROJECT_ID"):
         unittest.main()
     else:
-        print("Please set your MapRoulette API key in environment variable MR_API_KEY first.")
+        print("Please set your MapRoulette API key as MR_API_KEY and the id of your MapRoulette Project as MR_PROJECT_ID first.")

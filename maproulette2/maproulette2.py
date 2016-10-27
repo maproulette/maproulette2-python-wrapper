@@ -4,7 +4,30 @@ import os
 import json
 import requests
 
-class Project(object):
+class MapRouletteObject(object):
+    """Abstract MapRoulette base class"""
+
+    # TODO use ABC?
+
+    @property
+    def path(self):
+        raise NotImplementedError()
+
+    def get(self, server, use_api_key=False):
+        return server.get(self.path, use_api_key)
+
+    def post(self, server):
+        return server.post(self.path, self.__str__())
+
+    def put(self, server):
+        return server.put(self.path, self.__str__())
+
+    def delete(self, server):
+        return server.delete()
+
+
+class Project(MapRouletteObject):
+    """A MapRoulette Project."""
 
     READONLY = ["id"]
 
@@ -54,13 +77,12 @@ class Project(object):
             "enabled": self._enabled
         })
 
-    def get(self, server):
-        return server.get(self.path)
+
 
     #TODO support groups
 
 
-class Challenge(object):
+class Challenge(MapRouletteObject):
 
     READONLY = ["id", "featured"]
 
@@ -185,6 +207,7 @@ class Challenge(object):
         self._max_zoom = value
 
     def __init__(self, id=None):
+        super(Challenge, self).__init__()
         self._id = id
         self._name = None
         self._description = None
@@ -219,7 +242,30 @@ class Challenge(object):
         }])
 
 
-class Task(object):
+class ChallengeCollection(object):
+    """A collection of Challenges"""
+
+    @property
+    def challenges(self):
+        return self._challenges
+
+    @challenges.setter
+    def challenges(self, value):
+        self._challenges = value
+
+    def add_challenge(self, challenge):
+        self._challenges.append(challenge)
+
+    def __init__(self):
+        super(ChallengeCollection, self).__init__()
+        self._challenges = []
+
+    def __str__(self):
+        return json.dumps(challenges)
+
+    # TODO init with challenges JSON
+
+class Task(MapRouletteObject):
 
     READONLY = ["id"]
 
@@ -267,6 +313,7 @@ class Task(object):
         self._location = value
 
     def __init__(self, id=None):
+        super(Task, self).__init__()
         self._id = id
         self._name = None
         self._parent = None
@@ -284,7 +331,7 @@ class Task(object):
 
 
 class TaskCollection(object):
-
+    """A collection of Tasks"""
 
     @property
     def tasks(self):
@@ -298,6 +345,7 @@ class TaskCollection(object):
         self._tasks.append(task)
 
     def __init__(self):
+        super(TaskCollection, self).__init__()
         self._tasks = []
 
     def __str__(self):
@@ -307,24 +355,53 @@ class TaskCollection(object):
 class Server(object):
     """MapRoulette server instance"""
 
-    def __init__(self, api_key):
-        self.base_url = "http://maproulette.org/api/v2"
-        self.api_key = api_key
+    def __init__(self, api_key, project_id, base_url="http://maproulette.org/api/v2"):
+        super(Server, self).__init__()
+        self.base_url = base_url
+        self.project_id = project_id
+        self.headers = {"apiKey": api_key}
 
-    def get(self, path):
-        response = requests.get(os.path.join(self.base_url, path))
+    def get(self, path, use_api_key):
+        if use_api_key:
+            response = requests.get(
+                os.path.join(self.base_url, path),
+                headers=self.headers)
+        else:
+            response = requests.get(os.path.join(self.base_url, path))
         if response.status_code == 200:
-            return response.text
+            return response.json()
         raise MaprouletteException()
 
-    def post(self, payload):
-        pass
+    def post(self, path, payload):
+        response = requests.post(
+            os.path.join(self.base_url, path),
+            data=payload,
+            headers=self.headers)
+        return response.json()
 
-    def put(self, payload):
-        pass
+    def put(self, path, payload):
+        response = requests.put(
+            os.path.join(self.base_url, path),
+            data=payload,
+            headers=self.headers)
+        return response.json()
 
-    def delete(self):
-        pass
+    def delete(self, path):
+        response = requests.delete(
+            os.path.join(self.base_url, path),
+            headers=self.headers)
+        return response.json()
+
+    def my_challenges(self):
+        response = requests.get(
+            os.path.join(
+                self.base_url,
+                "project",
+                self.project_id,
+                "challenges"),
+            headers=self.headers
+        )
+        return response.json()
 
 
 class MaprouletteException(Exception):
