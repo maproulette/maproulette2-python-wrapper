@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-from maproulette2 import *
+from maproulette import *
 
 import unittest
 

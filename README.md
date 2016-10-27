@@ -156,5 +156,5 @@ t.delete(s)
 ## Run Tests
 
 ```
-export MR_API_KEY=your_api_key && ./test_maproulette2.py
+export MR_API_KEY=your_api_key && ./test_maproulette.py
 ```
